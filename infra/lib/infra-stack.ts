@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { aws_s3 as S3, aws_lambda as Lambda, aws_iam as Iam, aws_ssm as Ssm, aws_s3_notifications as S3notify } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
+import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python-alpha';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 
@@ -59,12 +59,13 @@ export class InfraStack extends cdk.Stack {
     });
 
     // lambda function triggered by s3 hook
-    const s3_hook_lambda = new Lambda.Function(this, 'LambdaFunction', {
+    const s3_hook_lambda = new PythonFunction(this, 'LambdaFunction', {
       role: lambda_exe_role,
       timeout: cdk.Duration.seconds(10),
+      entry: 'lib/lambda/src',
       runtime: Lambda.Runtime.PYTHON_3_9,
-      code: Lambda.Code.fromAsset('lib/lambda/deployment-package.zip'),
-      handler: 'index.handler',
+      index: 'index.py',
+      handler: 'handler',
       environment: {
         S3_PROCED_BUCKET_NAME: s3_raw_bucket.bucketName,
         SECRET_NAME: secret.secretName,
