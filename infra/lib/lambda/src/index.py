@@ -1,11 +1,17 @@
 import aws_s3_wrapper as s3
 import os
 
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+
 
 def main():
 
     S3_PROCED_BUCKET_NAME = os.environ['S3_PROCED_BUCKET_NAME']
+    SECRET_NAME = os.environ['SECRET_NAME']
     print('S3_PROCED_BUCKET_NAME', S3_PROCED_BUCKET_NAME)
+    print('SECRET_NAME', SECRET_NAME)
 
     bucket = S3_PROCED_BUCKET_NAME
     l_key = s3.ls(bucket)

@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { aws_s3 as S3, aws_lambda as Lambda, aws_iam as Iam, aws_s3_notifications as S3notify } from 'aws-cdk-lib';
+import { aws_s3 as S3, aws_lambda as Lambda, aws_iam as Iam, aws_ssm as Ssm, aws_s3_notifications as S3notify, SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha';
-
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -17,6 +17,11 @@ export class InfraStack extends cdk.Stack {
     const s3_proced_bucket = new S3.Bucket(this, 's3-proced-bucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+    })
+
+    const secret = new secretsmanager.Secret(this, 'Secret');
+    const iam_user = new Iam.User(this, 'User', {
+      password: secret.secretValue
     })
 
     const json = {
@@ -59,7 +64,8 @@ export class InfraStack extends cdk.Stack {
       index: 'index.py',
       role: lambda_exe_role,
       environment: {
-        S3_PROCED_BUCKET_NAME: s3_raw_bucket.bucketName
+        S3_PROCED_BUCKET_NAME: s3_raw_bucket.bucketName,
+        SECRET_NAME: secret.secretName
       }
     });
     //s3_raw_bucket.addObjectCreatedNotification(new S3notify.LambdaDestination(s3_hook_lambda))
