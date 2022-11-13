@@ -1,9 +1,18 @@
 import aws_s3_wrapper as s3
 import os
 
-#import botocore 
-#import botocore.session 
-#from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+import botocore 
+import botocore.session 
+from aws_secretsmanager_caching import SecretCache, SecretCacheConfig 
+
+def get_secret(secret_name):
+    client = botocore.session.get_session().create_client('secretsmanager')
+    cache_config = SecretCacheConfig()
+    cache = SecretCache(config=cache_config, client=client)
+
+    secret = cache.get_secret_string(secret_name)
+
+    return secret
 
 
 def main():
@@ -24,6 +33,9 @@ def main():
 
     presigned_url = s3.gen_presigned_url(bucket, key, days=int(7))
     print(presigned_url)
+
+    secret = get_secret(SECRET_NAME)
+    print('secret', secret)
     
     return
 

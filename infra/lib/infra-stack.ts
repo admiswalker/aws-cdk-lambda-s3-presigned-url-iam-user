@@ -1,12 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { aws_s3 as S3, aws_lambda as Lambda, aws_iam as Iam, aws_ssm as Ssm, aws_s3_notifications as S3notify } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python-alpha';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
-
+interface InfraStackProps extends StackProps {
+  prj_name: string;
+  env: any;
+}
 export class InfraStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: InfraStackProps) {
     super(scope, id, props);
 
     // S3 bucket
@@ -49,6 +53,20 @@ export class InfraStack extends cdk.Stack {
         }
       ]
     };
+    /*
+        {
+          "Effect": "Allow",
+          "Action": [
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds"
+          ],
+          "Resource": [
+            "arn:aws:secretsmanager:"+props.env.region+":"+props.env.account+":secret:"+secret.secretName+"*"
+          ]
+        },
+     */
     const lambda_exe_role = new Iam.Role(this, 'lambda_exe_role', {
       roleName: 'example_lambda_exe_role',
       assumedBy: new Iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -57,6 +75,7 @@ export class InfraStack extends cdk.Stack {
         inlinePolicies: Iam.PolicyDocument.fromJson(json),
       },
     });
+    secret.grantRead(lambda_exe_role);
 
     // lambda function triggered by s3 hook
     const s3_hook_lambda = new PythonFunction(this, 'LambdaFunction', {
