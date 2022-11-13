@@ -1,4 +1,0 @@
-pandas
-numpy
-boto3
-pytest
