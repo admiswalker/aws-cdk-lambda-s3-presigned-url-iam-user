@@ -16,4 +16,6 @@ $ cdk init app --language typescript
 ## IAM User と Secret の管理
 
 - [Python アプリケーションで AWS Secrets Manager シークレットを取得する](https://docs.aws.amazon.com/ja_jp/secretsmanager/latest/userguide/retrieving-secrets_cache-python.html)
+- [CloudFormationでIAMアクセスキーの発行とSecrets Managerへの格納をしてみた](https://dev.classmethod.jp/articles/issuing-iam-access-keys-and-storing-them-in-secrets-manager-with-cloudformation/)
+- [[AWS CDK] 発行したIAMアクセスキーがスタックの再デプロイ時に変更されないのか確認してみた](https://dev.classmethod.jp/articles/to-see-the-issued-iam-access-key-does-not-change-when-the-stack-is-redeployed-by-aws-cdk/)
 
