@@ -3,6 +3,7 @@ import os
 from urllib.parse import urlparse
 
 import boto3
+from botocore.client import Config
 
 
 def __split_s3_path(path):
@@ -124,7 +125,7 @@ def gen_presigned_url_key_id(src_path, days, access_id, access_key):
     
     bucket, key = __split_s3_path(src_path)
     
-    s3 = boto3.client('s3', aws_access_key_id=access_id, aws_secret_access_key=access_key)
+    s3 = boto3.client('s3', aws_access_key_id=access_id, aws_secret_access_key=access_key, config=Config(signature_version='s3v4'))
     presigned_url = s3.generate_presigned_url(
         ClientMethod = 'get_object',
         Params = {'Bucket' : bucket, 'Key' : key},

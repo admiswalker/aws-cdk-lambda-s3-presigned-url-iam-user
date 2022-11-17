@@ -101,9 +101,9 @@ export class InfraStack extends cdk.Stack {
     // lambda function triggered by s3 hook
     const s3_hook_lambda = new PythonFunction(this, 'LambdaFunction', {
       role: lambda_exe_role,
+      runtime: Lambda.Runtime.PYTHON_3_9,
       timeout: cdk.Duration.seconds(10),
       entry: 'lib/lambda/src',
-      runtime: Lambda.Runtime.PYTHON_3_9,
       index: 'index.py',
       handler: 'handler',
       environment: {

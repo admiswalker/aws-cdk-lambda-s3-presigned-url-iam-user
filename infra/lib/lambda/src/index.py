@@ -1,21 +1,9 @@
 import os
-
 import boto3
 import botocore
-import botocore.session
-from aws_secretsmanager_caching import SecretCache, SecretCacheConfig
 
 import aws_s3_wrapper as s3
 
-
-def get_secret(secret_name):
-    client = botocore.session.get_session().create_client('secretsmanager')
-    cache_config = SecretCacheConfig()
-    cache = SecretCache(config=cache_config, client=client)
-
-    secret = cache.get_secret_string(secret_name)
-
-    return secret
 
 def get_ssm_parameters(param_key):
     region = 'ap-northeast-1'
@@ -46,12 +34,6 @@ def main():
     print('dl end')
 
     days=int(7)
-    # presigned_url = s3.gen_presigned_url(src_path, )
-    # print(presigned_url)
-
-    secret = get_secret(SECRET_NAME)
-    print('secret', secret)
-
     access_id = get_ssm_parameters('secret-access-key-id')
     access_key = get_ssm_parameters('secret-access-key')
     presigned_url = s3.gen_presigned_url_key_id(src_path, days, access_id, access_key)
